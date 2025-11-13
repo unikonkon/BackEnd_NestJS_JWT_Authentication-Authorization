@@ -1,0 +1,118 @@
+### Test Authentication System
+### Base URL
+@baseUrl = http://localhost:3000/api
+@contentType = application/json
+
+### Variables (will be set after requests)
+@accessToken = 
+@refreshToken = 
+
+###############################################
+# 1. Health Check (Public Route)
+###############################################
+GET {{baseUrl}}
+Content-Type: {{contentType}}
+
+###############################################
+# 2. Register New User
+###############################################
+POST {{baseUrl}}/auth/register
+Content-Type: {{contentType}}
+
+{
+  "email": "admin@dtam.com",
+  "password": "admin123456",
+  "username": "admin",
+  "firstName": "Admin",
+  "lastName": "DTAM"
+}
+
+###############################################
+# 3. Login
+###############################################
+POST {{baseUrl}}/auth/login
+Content-Type: {{contentType}}
+
+{
+  "usernameOrEmail": "admin@dtam.com",
+  "password": "admin123456"
+}
+
+###############################################
+# 4. Get Current User Profile (Protected)
+###############################################
+GET {{baseUrl}}/auth/me
+Content-Type: {{contentType}}
+Authorization: Bearer {{accessToken}}
+
+###############################################
+# 5. Get All Users (Admin Only)
+###############################################
+GET {{baseUrl}}/users
+Content-Type: {{contentType}}
+Authorization: Bearer {{accessToken}}
+
+###############################################
+# 6. Refresh Token
+###############################################
+POST {{baseUrl}}/auth/refresh
+Content-Type: {{contentType}}
+Authorization: Bearer {{refreshToken}}
+
+###############################################
+# 7. Logout
+###############################################
+POST {{baseUrl}}/auth/logout
+Content-Type: {{contentType}}
+Authorization: Bearer {{accessToken}}
+
+###############################################
+# 8. Try to Access Protected Route (Should Fail)
+###############################################
+GET {{baseUrl}}/auth/me
+Content-Type: {{contentType}}
+Authorization: Bearer invalid_token
+
+###############################################
+# Test Cases
+###############################################
+
+### Register with Invalid Email
+POST {{baseUrl}}/auth/register
+Content-Type: {{contentType}}
+
+{
+  "email": "invalid-email",
+  "password": "password123",
+  "username": "testuser"
+}
+
+### Register with Short Password
+POST {{baseUrl}}/auth/register
+Content-Type: {{contentType}}
+
+{
+  "email": "test@example.com",
+  "password": "123",
+  "username": "testuser"
+}
+
+### Login with Wrong Password
+POST {{baseUrl}}/auth/login
+Content-Type: {{contentType}}
+
+{
+  "usernameOrEmail": "admin@dtam.com",
+  "password": "wrongpassword"
+}
+
+### Register Duplicate User
+POST {{baseUrl}}/auth/register
+Content-Type: {{contentType}}
+
+{
+  "email": "admin@dtam.com",
+  "password": "password123",
+  "username": "admin"
+}
+
